@@ -589,7 +589,7 @@ function App() {
 
   // --- Constantes de la App ---
   // Estos nombres de archivo coinciden con tu carpeta /public
-  const apkUrl = "/https://drive.google.com/uc?export=download&id=1tXJ7hoPmJ-mH4p--01t5UYqOYp-UUyYe";
+  const apkUrl = "https://drive.google.com/uc?export=download&id=1tXJ7hoPmJ-mH4p--01t5UYqOYp-UUyYe";
   const logoUrl = "/VIH-F.png";
   
   // Genera la URL del QR dinámicamente
