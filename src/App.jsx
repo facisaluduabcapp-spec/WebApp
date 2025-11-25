@@ -590,7 +590,7 @@ function App() {
   // --- Constantes de la App ---
   // Estos nombres de archivo coinciden con tu carpeta /public
   const apkUrl = "https://drive.google.com/uc?export=download&id=1tXJ7hoPmJ-mH4p--01t5UYqOYp-UUyYe";
-  const logoUrl = "/VIH-F.png";
+  const logoUrl = "/icon copy.png";
   
   // Genera la URL del QR dinámicamente
   const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + apkUrl)}&bgcolor=F4FAF7`;
