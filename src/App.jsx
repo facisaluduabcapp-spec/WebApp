@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // Se añade useEffect
 
 // --- Paleta de Colores Institucionales UABC ---
 const colors = {
@@ -578,6 +578,27 @@ const Footer = () => {
 // --- COMPONENTE App (Principal) ---
 // ===================================================================
 function App() {
+  // --- INTEGRACIÓN DE BOTPRESS ---
+useEffect(() => {
+    // 1. Cargamos el script de inyección (v3.6)
+    const injectScript = document.createElement('script');
+    injectScript.src = "https://cdn.botpress.cloud/webchat/v3.6/inject.js";
+    injectScript.async = true;
+    document.body.appendChild(injectScript);
+
+    // 2. Cargamos tu nueva configuración (T0ORO02Y.js)
+    const configScript = document.createElement('script');
+    configScript.src = "https://files.bpcontent.cloud/2026/04/21/04/20260421045652-T0ORO02Y.js";
+    configScript.defer = true;
+    document.body.appendChild(configScript);
+
+    // Limpieza al desmontar
+    return () => {
+      if (document.body.contains(injectScript)) document.body.removeChild(injectScript);
+      if (document.body.contains(configScript)) document.body.removeChild(configScript);
+    };
+  }, []);
+
   const styles = {
     app: {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -588,8 +609,7 @@ function App() {
   };
 
   // --- Constantes de la App ---
-  // Estos nombres de archivo coinciden con tu carpeta /public
-  const apkUrl = "https://drive.google.com/uc?export=download&id=1tXJ7hoPmJ-mH4p--01t5UYqOYp-UUyYe";
+  const apkUrl = "";
   const logoUrl = "/icon copy.png";
   
   // Genera la URL del QR dinámicamente
