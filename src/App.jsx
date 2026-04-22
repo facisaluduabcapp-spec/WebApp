@@ -579,7 +579,8 @@ const Footer = () => {
 // ===================================================================
 function App() {
   // --- INTEGRACIÓN DE BOTPRESS ---
-useEffect(() => {
+  // --- INTEGRACIÓN DE BOTPRESS ACTUALIZADA ---
+  useEffect(() => {
     // 1. Cargamos el script de inyección (v3.6)
     const injectScript = document.createElement('script');
     injectScript.src = "https://cdn.botpress.cloud/webchat/v3.6/inject.js";
