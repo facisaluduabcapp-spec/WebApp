@@ -610,7 +610,7 @@ function App() {
   };
 
   // --- Constantes de la App ---
-  const apkUrl = "";
+  const apkUrl = "https://github.com/facisaluduabcapp-spec/WebApp/releases/download/v1/application-02052026.apk";
   const logoUrl = "/icon copy.png";
   
   // Genera la URL del QR dinámicamente
