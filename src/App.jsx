@@ -1,639 +1,807 @@
-import React, { useEffect } from 'react'; // Se añade useEffect
+import React, { useEffect, useState } from 'react';
+import { FaPills, FaChartLine, FaHeart, FaLock, FaClipboardList, FaStar, FaChevronLeft, FaChevronRight} from 'react-icons/fa';
+// ─────────────────────────────────────────────
+// PALETA — clara, verde solo como acento
+// ─────────────────────────────────────────────
+const C = {
+  // Acento principal
+  green:       '#004A25',
+  greenMid:    '#1a6b3c',
+  greenLight:  '#e8f5ee',
+  greenLight2: '#39c992',
+  greenFaint:  '#f2faf5',
 
-// --- Paleta de Colores Institucionales UABC ---
-const colors = {
-  uabcGreen: '#004A25', // Verde oficial UABC
-  uabcGold: '#F1C400', // Dorado oficial UABC
-  darkText: '#222222',
-  lightText: '#FFFFFF',
-  bodyBg: '#F4FAF7', // Un verde muy claro para el fondo
-  white: '#FFFFFF',
-  cardBg: '#F9F9F9', // Fondo para tarjetas de características
-  gray: '#EAEAEA',
-  midGray: '#555555',
-  lightGray: '#AAAAAA',
+  // Dorado — acento secundario
+  gold:        '#D4A017',
+  goldLight:   '#fdf6e3',
+  goldBorder:  'rgba(212,160,23,0.30)',
+
+  // Neutros claros (base de la UI)
+  white:       '#FFFFFF',
+  bg:          '#F8F9FA',
+  surface:     '#FFFFFF',
+  border:      '#E4E8EC',
+
+  // Texto
+  textPrimary:  '#1C2B20',
+  textSecond:   '#4A6052',
+  textMuted:    '#8FA897',
 };
 
-// --- Icono SVG para el botón de descarga ---
-const DownloadIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+// ─────────────────────────────────────────────
+// ESTILOS GLOBALES
+// ─────────────────────────────────────────────
+const GlobalStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;1,400;1,500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: ${C.bg};
+      color: ${C.textPrimary};
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .btn-solid {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: ${C.green}; color: #fff;
+      padding: 11px 26px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700; font-size: 0.95rem;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .btn-solid:hover {
+      background: ${C.greenMid};
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,74,37,0.22);
+    }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 11px 26px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600; font-size: 0.95rem;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      cursor: pointer; text-decoration: none;
+      transition: background 0.18s, border-color 0.18s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.6); }
+
+    .card-hover { transition: transform 0.22s, box-shadow 0.22s; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,74,37,0.10) !important; }
+
+    .nav-link {
+      color: ${C.textSecond}; text-decoration: none;
+      font-weight: 600; font-size: 0.9rem;
+      transition: color 0.18s;
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-link:hover { color: ${C.green}; border-bottom-color: ${C.green}; }
+
+    .footer-link {
+      display: block; color: rgba(255,255,255,0.45); text-decoration: none;
+      font-size: 0.88rem; margin-bottom: 10px;
+      transition: color 0.18s, padding-left 0.18s;
+    }
+    .footer-link:hover { color: #fff; padding-left: 4px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.55s ease both; }
+    .d1 { animation-delay: 0.08s; }
+    .d2 { animation-delay: 0.16s; }
+    .d3 { animation-delay: 0.24s; }
+    .d4 { animation-delay: 0.32s; }
+
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+    .pulse { animation: pulse 2.2s infinite; }
+
+    .section-pill {
+      display: inline-block;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: ${C.green}; background: ${C.greenLight};
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
+    }
+  `}</style>
+);
+
+// ─────────────────────────────────────────────
+// ICONS
+// ─────────────────────────────────────────────
+const DlIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
     <polyline points="7 10 12 15 17 10"/>
     <line x1="12" y1="15" x2="12" y2="3"/>
   </svg>
 );
 
-// --- Efectos Hover (Globales) ---
-const handleMouseOver = (e) => {
-  let shadowColor = 'rgba(0, 74, 37, 0.3)'; // Sombra verde
-  e.currentTarget.style.transform = 'scale(1.03)';
-  e.currentTarget.style.boxShadow = `0 4px 15px ${shadowColor}`;
-};
-
-const handleMouseOut = (e) => {
-  e.currentTarget.style.transform = 'scale(1)';
-  e.currentTarget.style.boxShadow = 'none';
-};
-
-// ===================================================================
-// --- COMPONENTE Hero ---
-// ===================================================================
+const CheckIcon = ({ color = C.green }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
 const Hero = ({ apkUrl, logoUrl }) => {
-  const styles = {
-    hero: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '5rem 2rem 3rem 2rem',
-      textAlign: 'center',
-      minHeight: '30vh',
-    },
-    heroLogo: {
-      width: '150px',
-      height: '150px',
-      marginBottom: '1.5rem',
-      borderRadius: '50%',
-      boxShadow: '0 4px 15px rgba(0, 74, 37, 0.2)',
-      backgroundColor: colors.white,
-      padding: '5px',
-      objectFit: 'contain',
-    },
-    h1: {
-      fontSize: '2.8rem',
-      fontWeight: 'bold',
-      color: colors.uabcGreen,
-      lineHeight: '1.2',
-      margin: '0',
-    },
-    heroSubtitle: {
-      fontSize: '1.2rem',
-      color: colors.midGray,
-      margin: '0.5rem 0 2rem 0',
-    },
-    apkButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      backgroundColor: colors.uabcGreen,
-      color: colors.white,
-      padding: '0.75rem 2rem',
-      borderRadius: '50px',
-      textDecoration: 'none',
-      fontWeight: 'bold',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-      fontSize: '1rem',
-    },
-    heroInfo: {
-      fontSize: '0.9rem',
-      color: colors.midGray,
-      marginTop: '1.5rem',
-    },
-  };
+  // Componente de ícono de descarga integrado para evitar errores de compilación
+  const DlIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
 
   return (
-    <section style={styles.hero}>
-      <img src={logoUrl} alt="Logo de la app VIH" style={styles.heroLogo} />
-      <h1 style={styles.h1}>VIH APP</h1>
-      <p style={styles.heroSubtitle}>Descarga la aplicación ahora</p>
-      <a
-        href={apkUrl}
-        download="VIH_APP.apk" // Nombre del archivo al descargar
-        style={styles.apkButton}
-        onMouseOver={handleMouseOver}
-        onMouseOut={handleMouseOut}
-      >
-        Descargar APK
-      </a>
-      <p style={styles.heroInfo}>v1.0.0 • Última actualización: Hoy</p>
+    <section id="inicio" style={{
+      position: 'relative',
+      minHeight: '92vh',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'flex-end',
+      paddingBottom: '5rem',
+      backgroundImage: `
+        linear-gradient(to top,
+          rgba(10,28,16,0.92) 0%,
+          rgba(10,28,16,0.55) 28%,
+          rgba(10,28,16,0.10) 55%,
+          rgba(0,0,0,0.00) 100%
+        ),
+        url(https://images.pexels.com/photos/6995379/pexels-photo-6995379.jpeg)
+      `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center top',
+      backgroundRepeat: 'no-repeat',
+    }}>
+      <div style={{ textAlign: 'center', padding: '0 1.5rem' }}>
+        
+        {/* Logo */}
+        <div className="fade-up" style={{ marginBottom: 16 }}>
+          <img src={logoUrl} alt="VIH APP" style={{
+            width: 140, height: 140, borderRadius: '50%',
+            border: '3px solid rgba(255,255,255,0.6)',
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(6px)',
+            objectFit: 'contain'
+          }}/>
+        </div>
+        
+        {/* Título Principal */}
+        <h1 className="fade-up" style={{
+          fontSize: 'clamp(2.2rem, 4vw, 3.2rem)',
+          fontWeight: '800',
+          color: '#FFFFFF',
+          margin: '0 0 16px 0',
+        }}>
+          VIH APP
+        </h1>
+        
+        {/* Subtítulo */}
+        <p className="fade-up d3" style={{
+          fontSize: 'clamp(1rem, 2.5vw, 1.15rem)',
+          color: 'rgba(255,255,255,0.70)',
+          maxWidth: 460, margin: '0 auto 32px',
+          lineHeight: 1.7, fontWeight: 400,
+          textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)',
+        }}>
+          Controla tu medicación, registra tu bienestar y recibe apoyo motivacional cada día.
+        </p>
+
+        {/* Botones */}
+        <div className="fade-up d4" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
+          <a href={apkUrl} download="VIH_APP.apk" className="btn-solid" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <DlIcon /> Descargar APK
+          </a>
+          <a href="#qr-download" className="btn-ghost">Escanear QR</a>
+        </div>
+
+        {/* Metadatos */}
+        <div className="fade-up d4" style={{
+          display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center',
+          color: 'rgba(255,255,255,0.40)', fontSize: '0.78rem', fontWeight: 600,
+        }}>
+          {['v1.0.0', '107 MB', 'Android 5.0+'].map(t => (
+            <span key={t}>{t}</span>
+          ))}
+        </div>
+      </div>
     </section>
   );
 };
+// ─────────────────────────────────────────────
+// FEATURES
+// ─────────────────────────────────────────────
+const featureList = [
+  { 
+    Icon: FaPills, 
+    title: 'Control de Medicación', 
+    desc: 'Alarmas y registro de tratamiento para no olvidar ninguna toma. Disponible para usuarios A y B.', 
+    img: '/imagen-med.png', 
+    accent: C.greenLight 
+  },
+  { 
+    Icon: FaChartLine, 
+    title: 'Seguimiento Diario',     
+    desc: 'Monitoreo de ánimo, síntomas y bienestar general cada día. Disponible para usuarios A.', 
+    img: '/imagen-seg.png', 
+    accent: '#EEF6FF' 
+  },
+  { 
+    Icon: FaHeart, 
+    title: 'Motivación',             
+    desc: 'Mensajes positivos para empezar el día con fuerza. Disponible para usuarios A.',         
+    img: '/imagen-mot.png', 
+    accent: C.goldLight 
+  }
+];
 
-// ===================================================================
-// --- COMPONENTE Features ---
-// ===================================================================
-const Features = () => {
-  const styles = {
-    features: {
-      backgroundColor: colors.white,
-      padding: '4rem 2rem',
-      textAlign: 'center',
+const Features = () => (
+  <section id="funciones" style={{ background: C.bg, padding: '5rem 2rem' }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <span className="section-pill">Funciones</span>
+        <h2 style={{ fontFamily: "'Lora',serif", fontSize: 'clamp(1.7rem,4vw,2.4rem)', color: C.textPrimary, fontWeight: 600, marginBottom: 10 }}>
+          Todo lo que necesitas
+        </h2>
+        <p style={{ color: C.textSecond, fontSize: '1rem', maxWidth: 500, margin: '0 auto', lineHeight: 1.7 }}>
+          Herramientas diseñadas para que tu rutina de salud sea simple y efectiva.
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.8rem' }}>
+        {featureList.map(({ Icon, title, desc, img, accent }) => (
+          <div key={title} className="card-hover" style={{
+            background: C.surface, 
+            border: `1px solid ${C.border}`,
+            borderRadius: 22, 
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {/* Contenedor de la imagen más grande y estilizado */}
+            <div style={{ height: 200, background: accent, overflow: 'hidden', position: 'relative' }}>
+              <img src={img} alt={title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.95 }}
+                onError={e => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+            
+            {/* Cuerpo de la tarjeta */}
+            <div style={{ padding: '1.6rem 1.8rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+              <span style={{ 
+                fontSize: '1.4rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                width: '44px', 
+                height: '44px', 
+                borderRadius: '12px',
+                background: 'rgba(0,0,0,0.04)',
+                color: C.primary || '#103F29',
+                marginBottom: 14 
+              }}>
+                <Icon />
+              </span>
+              <h3 style={{ fontSize: '1.08rem', fontWeight: 700, color: C.textPrimary, marginBottom: 8 }}>
+                {title}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: C.textSecond, lineHeight: 1.6, margin: 0 }}>
+                {desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+// ─────────────────────────────────────────────
+// DOWNLOAD SECTION
+// ─────────────────────────────────────────────
+const DownloadSection = ({ apkUrl }) => (
+  <section id="descargar" style={{ background: C.greenFaint, padding: '5rem 2rem', borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+    <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      <div style={{
+        background: C.surface, borderRadius: 24,
+        padding: 'clamp(2rem,5vw,3.5rem)',
+        textAlign: 'center',
+        border: `1px solid ${C.border}`,
+        boxShadow: '0 8px 40px rgba(0,74,37,0.07)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: -50, right: -50, width: 160, height: 160, borderRadius: '50%', background: C.greenLight2, opacity: 0.6, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -40, left: -40, width: 120, height: 120, borderRadius: '50%', background: C.goldLight, opacity: 0.7, pointerEvents: 'none' }} />
+
+        <span className="section-pill">Descarga Directa</span>
+        <h2 style={{ fontFamily: "'Lora',serif", fontSize: 'clamp(1.7rem,4vw,2.4rem)', color: C.textPrimary, fontWeight: 600, marginBottom: 10 }}>
+          Descarga Tu App
+        </h2>
+        <p style={{ color: C.textSecond, marginBottom: '2.5rem' }}>Disponible para Android 5.0 o superior</p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', paddingBottom: '2.5rem', marginBottom: '2.5rem', borderBottom: `1px solid ${C.border}` }}>
+          {[
+            { label: 'Tamaño',     value: '107 MB' },
+            { label: 'Versión',    value: 'v1.0.0' },
+            { label: 'Plataforma', value: 'Android' },
+          ].map(({ label, value, accent }) => (
+            <div key={label} style={{ textAlign: 'center', minWidth: 80 }}>
+              <p style={{ fontSize: '0.72rem', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{label}</p>
+              <p style={{ fontSize: '1.4rem', fontWeight: 800, color: accent ? C.green : C.textPrimary }}>{value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Botón principal: Descargar APK */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+          <a href={apkUrl} download="VIH-APP.apk" className="btn-solid" style={{ fontSize: '1.05rem', padding: '13px 34px', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Descargar APK Ahora
+          </a>
+          
+          {/* Botón secundario: Descargar/Ver Manual en PDF */}
+          <a href="/ManualUsuario_VihApp.pdf" download="Manual_Usuario_VIH_APP.pdf" style={{ 
+            color: C.green, 
+            textDecoration: 'none', 
+            fontWeight: 600, 
+            fontSize: '0.88rem', 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            marginTop: '0.5rem',
+            borderBottom: `1px dashed ${C.green}`
+          }}>
+            Descargar Manual de Usuario (PDF)
+          </a>
+        </div>
+
+        <p style={{ fontSize: '0.75rem', color: C.textMuted, marginTop: 24 }}>
+          Al descargar aceptas nuestros términos y condiciones
+        </p>
+      </div>
+    </div>
+  </section>
+);
+
+// ─────────────────────────────────────────────
+// IMAGES SECTION
+// ─────────────────────────────────────────────
+const ScreenshotsCarrousel = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const screenshotList = [
+    {
+      id: 1,
+      src: '/images/estado_emocional.png',
+      title: 'Resumen emocional',
+      subtitle: 'Bienestar diario',
+      desc: 'Visualiza tu progreso emocional basado en tus respuestas. Entendemos que tu bienestar es importante, por eso te damos un resumen claro. Disponible para usuarios A.',
+      accent: '#EEF6FF' // Fondo de acento sutil
     },
-    h2: {
-      fontSize: '2.2rem',
-      fontWeight: 'bold',
-      color: colors.uabcGreen,
-      marginBottom: '0.5rem',
+    {
+      id: 2,
+      src: '/images/seguimiento_medico.png',
+      title: 'Control de medicación',
+      subtitle: 'Toma el control',
+      desc: 'Alarmas y registro de tratamiento para asegurar que nunca olvides una toma. La salud debe ser simple y sin complicaciones. Disponible para usuarios A y B.',
+      accent: C.greenLight || '#E8F5E9'
     },
-    sectionSubtitle: {
-      fontSize: '1.1rem',
-      color: colors.midGray,
-      maxWidth: '600px',
-      margin: '0 auto 3rem auto',
+    {
+      id: 3,
+      src: '/images/seguimiento_diario.png',
+      title: 'Seguimiento diario',
+      subtitle: 'Tu día a día',
+      desc: 'Registra tu estado de ánimo, síntomas y bienestar general en menos de un minuto. Un espacio seguro y confidencial para ti. Disponible para usuarios A.',
+      accent: '#e8ebfc'
     },
-    featuresGrid: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '1.5rem',
-      justifyContent: 'center',
-      maxWidth: '1200px',
-      margin: '0 auto',
-    },
-    featureCard: {
-      flex: '1 1 250px',
-      maxWidth: '300px',
-      backgroundColor: colors.cardBg,
-      padding: '2rem',
-      borderRadius: '12px',
-      textAlign: 'left',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-      border: `1px solid ${colors.gray}`,
-    },
-    featureIconContainer: {
-      fontSize: '1.8rem',
-      backgroundColor: 'rgba(0, 74, 37, 0.1)',
-      color: colors.uabcGreen,
-      width: '50px',
-      height: '50px',
-      borderRadius: '10px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    h3: {
-      fontSize: '1.3rem',
-      fontWeight: 'bold',
-      color: colors.darkText,
-      margin: '1rem 0 0.5rem 0',
-    },
-    p: {
-      fontSize: '0.95rem',
-      color: colors.midGray,
-      lineHeight: '1.5',
-    },
+    {
+      id: 4,
+      src: '/images/panel_progreso.png',
+      title: 'Panel de progreso',
+      subtitle: 'Estadísticas claras',
+      desc: 'Muestra tu progreso a lo largo del tiempo con gráficos intuitivos y motivadores que te ayudan a tomar decisiones informadas. Disponible para usuarios A y B.',
+      accent: '#bedcf5'
+    }
+  ];
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % screenshotList.length);
   };
 
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + screenshotList.length) % screenshotList.length);
+  };
+
+  const activeItem = screenshotList[activeIndex];
+
   return (
-    <section id="features" style={styles.features}>
-      <h2 style={styles.h2}>Tu acompañante de salud</h2>
-      <p style={styles.sectionSubtitle}>Funciones clave diseñadas para tu bienestar:</p>
-      <div style={styles.featuresGrid}>
-        <div style={styles.featureCard}>
-          <div style={styles.featureIconContainer}>💊</div>
-          <h3 style={styles.h3}>Control de Medicación</h3>
-          <p style={styles.p}>Configura alarmas y lleva un registro fácil de tu tratamiento para no olvidar ninguna toma.</p>
+    <section id="galeria-interactiva" style={{ 
+      background: C.bg || '#F9FAFB', 
+      padding: '6rem 2rem', 
+      borderTop: `1px solid ${C.border}` 
+    }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+
+        {/* Encabezado */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <span className="section-pill">Descubre la app</span>
+          <h2 style={{ 
+            fontFamily: "'Lora', serif", 
+            fontSize: 'clamp(1.7rem, 4vw, 2.4rem)', 
+            color: C.textPrimary, 
+            fontWeight: 600, 
+            marginBottom: 12 
+          }}>
+            Diseñada para tu comodidad
+          </h2>
+          <p style={{ color: C.textSecond, fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
+            Conoce nuestras herramientas. Puedes explorar cada pantalla y su función principal tocando los botones.
+          </p>
         </div>
-        <div style={styles.featureCard}>
-          <div style={styles.featureIconContainer}>📝</div>
-          <h3 style={styles.h3}>Seguimiento Diario</h3>
-          <p style={styles.p}>Responde preguntas diarias para monitorear tu estado de ánimo, síntomas y bienestar general.</p>
-        </div>
-        <div style={styles.featureCard}>
-          <div style={styles.featureIconContainer}>✨</div>
-          <h3 style={styles.h3}>Mensajes Motivacionales</h3>
-          <p style={styles.p}>Recibe notificaciones con mensajes positivos y de aliento para ayudarte en tu día a día.</p>
-        </div>
-        <div style={styles.featureCard}>
-          <div style={styles.featureIconContainer}>🔒</div>
-          <h3 style={styles.h3}>Privacidad Garantizada</h3>
-          <p style={styles.p}>Tu información personal y tus registros de salud son 100% confidenciales y están encriptados.</p>
+
+        {/* Contenedor principal: Imagen a la izquierda, texto a la derecha */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '3rem',
+          background: C.surface,
+          borderRadius: 28,
+          border: `1px solid ${C.border}`,
+          padding: '2.5rem',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+        }}>
+
+          {/* LADO IZQUIERDO: Vista de la pantalla del móvil */}
+          <div style={{ 
+            flex: '1 1 380px', 
+            height: '460px', 
+            background: activeItem.accent, 
+            borderRadius: 20,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+            border: `1px solid ${C.border}`
+          }}>
+            <img 
+              src={activeItem.src} 
+              alt={activeItem.title}
+              style={{ 
+                height: '85%', 
+                width: 'auto',
+                objectFit: 'contain',
+                objectPosition: 'bottom center',
+                borderRadius: '16px 16px 0 0',
+              }}
+              onError={e => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+
+          {/* LADO DERECHO: Descripción y controles */}
+          <div style={{ flex: '1 1 420px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            
+            {/* Píldora de categoría */}
+            <span style={{ 
+              alignSelf: 'flex-start',
+              background: 'rgba(0,0,0,0.04)', 
+              color: C.primary || '#103F29', 
+              padding: '4px 12px', 
+              borderRadius: 16, 
+              fontSize: '0.8rem', 
+              fontWeight: 700,
+              marginBottom: 16
+            }}>
+              {activeItem.subtitle}
+            </span>
+
+            <h3 style={{ 
+              fontSize: '2rem', 
+              fontWeight: 800, 
+              color: C.textPrimary, 
+              lineHeight: 1.2,
+              marginBottom: 14 
+            }}>
+              {activeItem.title}
+            </h3>
+
+            <p style={{ 
+              fontSize: '0.98rem', 
+              color: C.textSecond, 
+              lineHeight: 1.7, 
+              marginBottom: '2.5rem' 
+            }}>
+              {activeItem.desc}
+            </p>
+
+            {/* Controles para cambiar de pantalla */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+              <button 
+                onClick={handlePrev}
+                style={{
+                  background: 'transparent',
+                  border: `1px solid ${C.border}`,
+                  borderRadius: '50%',
+                  width: '44px',
+                  height: '44px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: C.textPrimary,
+                }}
+              >
+                <FaChevronLeft />
+              </button>
+
+              {/* Indicadores de página (Puntos) */}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {screenshotList.map((item, index) => (
+                  <span 
+                    key={item.id}
+                    onClick={() => setActiveIndex(index)}
+                    style={{
+                      width: activeIndex === index ? '24px' : '8px',
+                      height: '8px',
+                      borderRadius: '10px',
+                      background: activeIndex === index ? (C.primary || '#103F29') : C.border,
+                      cursor: 'pointer',
+                      transition: 'width 0.3s ease'
+                    }}
+                  />
+                ))}
+              </div>
+
+              <button 
+                onClick={handleNext}
+                style={{
+                  background: 'transparent',
+                  border: `1px solid ${C.border}`,
+                  borderRadius: '50%',
+                  width: '44px',
+                  height: '44px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: C.textPrimary,
+                }}
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-// ===================================================================
-// --- COMPONENTE DownloadSection ---
-// ===================================================================
-const DownloadSection = ({ apkUrl }) => {
-  const styles = {
-    downloadSection: {
-      backgroundColor: colors.uabcGreen,
-      padding: '4rem 2rem',
-    },
-    h2: {
-      fontSize: '2.2rem',
-      fontWeight: 'bold',
-      color: colors.uabcGreen,
-      marginBottom: '0.5rem',
-    },
-    sectionSubtitle: {
-      fontSize: '1.1rem',
-      color: colors.midGray,
-      maxWidth: '600px',
-      margin: '0 auto 3rem auto',
-    },
-    downloadCard: {
-      backgroundColor: colors.white,
-      maxWidth: '800px',
-      margin: '0 auto',
-      borderRadius: '16px',
-      padding: '3rem',
-      textAlign: 'center',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-    },
-    downloadInfoGrid: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'space-around',
-      gap: '1rem',
-      margin: '2rem 0',
-      paddingBottom: '2rem',
-      borderBottom: `1px solid ${colors.gray}`,
-    },
-    infoBox: {
-      textAlign: 'center',
-      flex: '1',
-      minWidth: '100px',
-    },
-    infoLabel: {
-      fontSize: '0.9rem',
-      color: colors.midGray,
-      marginBottom: '0.25rem',
-    },
-    infoValue: {
-      fontSize: '1.3rem',
-      fontWeight: 'bold',
-      color: colors.darkText,
-    },
-    infoValueGold: {
-      fontSize: '1.3rem',
-      fontWeight: 'bold',
-      color: colors.uabcGold,
-    },
-    apkButtonLarge: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '0.75rem',
-      backgroundColor: colors.uabcGreen,
-      color: colors.white,
-      padding: '1rem 2.5rem',
-      borderRadius: '10px',
-      textDecoration: 'none',
-      fontWeight: 'bold',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-      fontSize: '1.2rem',
-    },
-    termsText: {
-      fontSize: '0.8rem',
-      color: colors.midGray,
-      marginTop: '1.5rem',
-    },
-  };
 
-  return (
-    <section id="download" style={styles.downloadSection}>
-      <div style={styles.downloadCard}>
-        <h2 style={styles.h2}>Descarga Tu App</h2>
-        <p style={{...styles.sectionSubtitle, color: colors.midGray, margin: '0.5rem auto 3rem auto'}}>Disponible para dispositivos Android 5.0 o superior</p>
-        <div style={styles.downloadInfoGrid}>
-          <div style={styles.infoBox}>
-            <p style={styles.infoLabel}>Tamaño del APK</p>
-            <p style={styles.infoValue}>107 MB</p>
-          </div>
-          <div style={styles.infoBox}>
-            <p style={styles.infoLabel}>Versión</p>
-            <p style={styles.infoValue}>v1.0.0</p>
-          </div>
-          <div style={styles.infoBox}>
-            <p style={styles.infoLabel}>Descargas</p>
-            <p style={styles.infoValueGold}>0</p>
-          </div>
-        </div>
-        <a
-          href={apkUrl}
-          download="VIH-APP.apk"
-          style={styles.apkButtonLarge}
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-        >
-          <DownloadIcon />
-          <span>Descargar APK Ahora</span>
-        </a>
-        <p style={styles.termsText}>Al descargar aceptas nuestros términos y condiciones</p>
+// ─────────────────────────────────────────────
+// QR SECTION
+// ─────────────────────────────────────────────
+const QrSection = ({ qrCodeApiUrl }) => (
+  <section id="qr-download" style={{ background:C.bg, padding:'5rem 2rem', textAlign:'center' }}>
+    <span className="section-pill">Escanear</span>
+    <h2 style={{ fontFamily:"'Lora',serif", fontSize:'clamp(1.7rem,4vw,2.4rem)', color:C.textPrimary, fontWeight:600, marginBottom:10 }}>
+      Descarga desde tu Teléfono
+    </h2>
+    <p style={{ color:C.textSecond, margin:'0 auto 3rem', maxWidth:460, lineHeight:1.7 }}>
+      Apunta la cámara al código y el APK se descarga directo en tu Android.
+    </p>
+
+    <div className="float-anim" style={{
+      display:'inline-block',
+      background:C.surface, borderRadius:22,
+      padding:'1.75rem',
+      border:`1px solid ${C.border}`,
+      boxShadow:'0 12px 40px rgba(0,74,37,0.09)',
+    }}>
+      <div style={{ position:'relative', display:'inline-block' }}>
+        {[{top:-8,left:-8},{top:-8,right:-8},{bottom:-8,left:-8},{bottom:-8,right:-8}].map((pos, i) => (
+          <div key={i} style={{ position:'absolute', ...pos, width:22, height:22, border:`3px solid ${C.green}`, borderRadius:4, background:C.greenLight }}/>
+        ))}
+        <img src={qrCodeApiUrl} alt="QR VIH APP" style={{ width:180, height:180, borderRadius:8, display:'block' }}/>
       </div>
-    </section>
-  );
-};
+    </div>
 
-// ===================================================================
-// --- COMPONENTE QrSection ---
-// ===================================================================
-const QrSection = ({ qrCodeApiUrl }) => {
-  const styles = {
-    qrSection: {
-      padding: '4rem 2rem',
-      textAlign: 'center',
-      backgroundColor: colors.white,
-    },
-    h2: {
-      fontSize: '2.2rem',
-      fontWeight: 'bold',
-      color: colors.uabcGreen,
-      marginBottom: '0.5rem',
-    },
-    sectionSubtitle: {
-      fontSize: '1.1rem',
-      color: colors.midGray,
-      maxWidth: '600px',
-      margin: '0 auto 3rem auto',
-    },
-    qrCodeContainer: {
-      display: 'inline-block',
-      padding: '1rem',
-      backgroundColor: colors.white,
-      borderRadius: '12px',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-      border: `1px solid ${colors.gray}`,
-    },
-    qrCodeImage: {
-      width: '200px',
-      height: '200px',
-      borderRadius: '8px',
-    },
-  };
+    <p style={{ marginTop:'1.5rem', fontSize:'0.82rem', color:C.textMuted }}>
+      Compatible con la cámara nativa de iOS y Android
+    </p>
+  </section>
+);
 
-  return (
-    <section id="qr-download" style={styles.qrSection}>
-      <h2 style={styles.h2}>Escanear para Descargar</h2>
-      <p style={styles.sectionSubtitle}>
-        Usa la cámara de tu teléfono para descargar el archivo .apk directamente.
-      </p>
-      <div style={styles.qrCodeContainer}>
-        <img
-          src={qrCodeApiUrl}
-          alt="Codigo QR para descargar VIH APP"
-          style={styles.qrCodeImage}
-        />
-      </div>
-    </section>
-  );
-};
+// ─────────────────────────────────────────────
+// REQUIREMENTS
+// ─────────────────────────────────────────────
 
-// ===================================================================
-// --- COMPONENTE Requirements ---
-// ===================================================================
-const Requirements = () => {
-  const styles = {
-    requirementsSection: {
-      backgroundColor: colors.bodyBg,
-      padding: '4rem 2rem',
-      textAlign: 'center',
-    },
-    h2: {
-      fontSize: '2.2rem',
-      fontWeight: 'bold',
-      color: colors.uabcGreen,
-      marginBottom: '0.5rem',
-    },
-    requirementsGrid: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '2rem',
-      justifyContent: 'center',
-      maxWidth: '1000px',
-      margin: '0 auto',
-    },
-    reqCard: {
-      flex: '1 1 300px',
-      maxWidth: '450px',
-      backgroundColor: colors.white,
-      padding: '2rem',
-      borderRadius: '12px',
-      border: `2px solid ${colors.gray}`,
-      textAlign: 'left',
-    },
-    reqTitle: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem',
-      fontSize: '1.3rem',
-      fontWeight: 'bold',
-      color: colors.darkText,
-      marginBottom: '1.5rem',
-    },
-    reqIconGreen: {
-      fontSize: '1.5rem',
-      color: colors.uabcGreen,
-    },
-    reqIconGold: {
-      fontSize: '1.5rem',
-      color: colors.uabcGold,
-    },
-    reqList: {
-      listStyle: 'none',
-      paddingLeft: '0',
-    },
-    reqItem: {
-      marginBottom: '0.75rem',
-      color: colors.midGray,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-    },
-    reqItemGold: {
-      fontWeight: '500',
-      color: colors.uabcGold,
-    },
-  };
+const Requirements = () => (
+  <section id="requisitos" style={{ background: C.surface, padding: '5rem 2rem', borderTop: `1px solid ${C.border}` }}>
+    <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
+      <span className="section-pill">Requisitos</span>
+      <h2 style={{ fontFamily: "'Lora',serif", fontSize: 'clamp(1.7rem,4vw,2.4rem)', color: C.textPrimary, fontWeight: 600, marginBottom: 10 }}>
+        ¿Tu dispositivo es compatible?
+      </h2>
+      <p style={{ color: C.textSecond, margin: '0 auto 3rem', maxWidth: 460, lineHeight: 1.7 }}>Revisa los requisitos antes de descargar.</p>
 
-  return (
-    <section id="requirements" style={styles.requirementsSection}>
-      <h2 style={styles.h2}>Requisitos del Sistema</h2>
-      <div style={styles.requirementsGrid}>
-        <div style={styles.reqCard}>
-          <h3 style={styles.reqTitle}>
-            <span style={styles.reqIconGreen}>📋</span>
-            Requisitos Mínimos
-          </h3>
-          <ul style={styles.reqList}>
-            <li style={styles.reqItem}><span style={styles.reqItemGold}>•</span>Android 5.0 o superior</li>
-            <li style={styles.reqItem}><span style={styles.reqItemGold}>•</span>100 MB de espacio disponible</li>
-            <li style={styles.reqItem}><span style={styles.reqItemGold}>•</span>1 GB de RAM mínimo</li>
-            <li style={styles.reqItem}><span style={styles.reqItemGold}>•</span>Conexión a Internet</li>
-          </ul>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', justifyContent: 'center' }}>
+        {/* Mínimos */}
+        <div className="card-hover" style={{ background: C.bg, border: `1.5px solid ${C.border}`, borderRadius: 18, padding: '2rem', textAlign: 'left' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.5rem' }}>
+            <span style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '40px', 
+              height: '40px', 
+              borderRadius: '10px',
+              background: 'rgba(0,0,0,0.04)',
+              color: C.greenMid || '#103F29',
+              fontSize: '1.15rem' 
+            }}>
+              <FaClipboardList />
+            </span>
+            <h3 style={{ fontWeight: 700, color: C.textPrimary, margin: 0 }}>Requisitos Mínimos</h3>
+          </div>
+          {['Android 5.0 o superior', '100 MB de espacio', '1 GB de RAM', 'Conexión a Internet'].map(r => (
+            <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <CheckIcon color={C.greenMid} />
+              <span style={{ fontSize: '0.92rem', color: C.textSecond }}>{r}</span>
+            </div>
+          ))}
         </div>
-        <div style={styles.reqCard}>
-          <h3 style={styles.reqTitle}>
-            <span style={styles.reqIconGold}>⚠️</span>
+
+        {/* Recomendado */}
+        <div className="card-hover" style={{
+          background: C.surface, border: `2px solid ${C.green}`,
+          borderRadius: 18, padding: '2rem', textAlign: 'left', position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ 
+            position: 'absolute', 
+            top: 16, 
+            right: 16, 
+            background: C.green, 
+            color: '#fff', 
+            fontSize: '0.65rem', 
+            fontWeight: 800, 
+            letterSpacing: 1.2, 
+            textTransform: 'uppercase', 
+            padding: '3px 10px', 
+            borderRadius: 20 
+          }}>
             Recomendado
-          </h3>
-          <ul style={styles.reqList}>
-            <li style={styles.reqItem}>✅ Android 10 o superior</li>
-            <li style={styles.reqItem}>✅ 200 MB de espacio disponible</li>
-            <li style={styles.reqItem}>✅ 3 GB de RAM o más</li>
-            <li style={styles.reqItem}>✅ <span style={{ color: colors.midGray, fontWeight: '500' }}>Conexión WiFi recomendada</span></li>
-          </ul>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.5rem' }}>
+            <span style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '40px', 
+              height: '40px', 
+              borderRadius: '10px',
+              background: `${C.greenLight || 'rgba(16,63,41,0.08)'}`,
+              color: C.green || '#103F29',
+              fontSize: '1.15rem' 
+            }}>
+              <FaStar />
+            </span>
+            <h3 style={{ fontWeight: 700, color: C.textPrimary, margin: 0 }}>Especificaciones Óptimas</h3>
+          </div>
+          {['Android 10 o superior', '200 MB de espacio libre', '3 GB de RAM o más', 'Conexión WiFi'].map(r => (
+            <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <CheckIcon color={C.green} />
+              <span style={{ fontSize: '0.92rem', color: C.textSecond }}>{r}</span>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
-  );
-};
-
-// ===================================================================
-// --- COMPONENTE Footer ---
-// ===================================================================
-const Footer = () => {
-  const styles = {
-    footer: {
-      backgroundColor: colors.uabcGreen,
-      color: colors.lightGray,
-      padding: '4rem 2rem 2rem 2rem',
-    },
-    footerGrid: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '2rem',
-      justifyContent: 'space-between',
-      maxWidth: '1200px',
-      margin: '0 auto 3rem auto',
-    },
-    footerColumn: {
-      flex: '1',
-      minWidth: '180px',
-    },
-    footerLogo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem',
-      fontSize: '1.3rem',
-      fontWeight: 'bold',
-      color: colors.white,
-      marginBottom: '1rem',
-    },
-    footerLogoIcon: {
-      fontSize: '1.5rem',
-      color: colors.uabcGold,
-    },
-    p: {
-      fontSize: '0.95rem',
-      color: colors.lightGray,
-      lineHeight: '1.5',
-    },
-    footerLink: {
-      display: 'block',
-      color: colors.lightGray,
-      textDecoration: 'none',
-      marginBottom: '0.75rem',
-      transition: 'color 0.2s ease',
-    },
-    footerH4: {
-      fontSize: '1.1rem',
-      fontWeight: 'bold',
-      color: colors.white,
-      marginBottom: '1.25rem',
-    },
-    footerCopyright: {
-      textAlign: 'center',
-      paddingTop: '2rem',
-      borderTop: `1px solid ${colors.lightGray}`,
-      fontSize: '0.9rem',
-    },
-  };
-
-  return (
-    <footer style={styles.footer}>
-      <div style={styles.footerGrid}>
-        <div style={styles.footerColumn}>
-          <h4 style={styles.footerLogo}>
-            <span style={styles.footerLogoIcon}>🟢</span>
-            VIH APP
-          </h4>
-          <p style={styles.p}>La mejor aplicación para tu día a día.</p>
+    </div>
+  </section>
+);
+// ─────────────────────────────────────────────
+// FOOTER
+// ─────────────────────────────────────────────
+const Footer = () => (
+  <footer style={{ background:C.textPrimary, padding:'4rem 2rem 2rem' }}>
+    <div style={{ maxWidth:1200, margin:'0 auto' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))', gap:'2rem', marginBottom:'3rem' }}>
+        <div>
+          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+            <span style={{ fontFamily:"'Lora',serif", fontSize:'1.15rem', color:'#fff', fontWeight:600 }}>VIH APP</span>
+          </div>
+          <p style={{ fontSize:'0.86rem', color:'rgba(255,255,255,0.45)', lineHeight:1.8, maxWidth:200 }}>
+            Acompañamiento de salud diseñado con cuidado por el equipo Binary & UABC.
+          </p>
         </div>
-        <div style={styles.footerColumn}>
-          <h4 style={styles.footerH4}>Ayuda</h4>
-          <a href="#" style={styles.footerLink}>FAQ</a>
-          <a href="#" style={styles.footerLink}>Soporte</a>
-          <a href="#" style={styles.footerLink}>Bugs</a>
-        </div>
-        <div style={styles.footerColumn}>
-          <h4 style={styles.footerH4}>Legal</h4>
-          <a href="#" style={styles.footerLink}>Privacidad</a>
-          <a href="#" style={styles.footerLink}>Términos</a>
-          <a href="#" style={styles.footerLink}>Licencia</a>
-        </div>
-        <div style={styles.footerColumn}>
-          <h4 style={styles.footerH4}>Redes Sociales</h4>
-          <a href="#" style={styles.footerLink}>Twitter</a>
-          <a href="#" style={styles.footerLink}>Facebook</a>
-          <a href="#" style={styles.footerLink}>Instagram</a>
-        </div>
+        {[
+          { title:'Navegación', links:[
+            { label:'Inicio', href:'#inicio' },
+            { label:'Funciones', href:'#funciones' },
+            { label:'Descargar', href:'#descargar' }
+          ] },
+          { title:'Secciones', links:[
+            { label:'Galería', href:'#galeria-interactiva' },
+            { label:'QR', href:'#qr-download' },
+            { label:'Requisitos', href:'#requisitos' }
+          ] },
+          { title:'Accesos rápidos', links:[
+            { label:'Escanear QR', href:'#qr-download' },
+            { label:'Ver funciones', href:'#funciones' },
+            { label:'Descargar APK', href:'#descargar' }
+          ] },
+        ].map(({ title, links }) => (
+          <div key={title}>
+            <h4 style={{ color:'#fff', fontWeight:700, fontSize:'0.9rem', marginBottom:'1rem' }}>{title}</h4>
+            {links.map(link => <a key={link.label} href={link.href} className="footer-link">{link.label}</a>)}
+          </div>
+        ))}
       </div>
-      <div style={styles.footerCopyright}>
-        <p>© 2025 VIH APP. Todos los derechos reservados. • Hecho por Binary</p>
+
+      <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:'1.5rem', display:'flex', flexWrap:'wrap', gap:12, justifyContent:'space-between', alignItems:'center', fontSize:'0.78rem', color:'rgba(255,255,255,0.30)' }}>
+        <p>© 2025 VIH APP — Todos los derechos reservados · Hecho por Binary</p>
+        <span style={{ color:C.green, fontWeight:700 }}>UABC · Facisalud</span>
       </div>
-    </footer>
-  );
-};
+    </div>
+  </footer>
+);
 
-
-// ===================================================================
-// --- COMPONENTE App (Principal) ---
-// ===================================================================
+// ─────────────────────────────────────────────
+// APP ROOT
+// ─────────────────────────────────────────────
 function App() {
-  // --- INTEGRACIÓN DE BOTPRESS ---
-  // --- INTEGRACIÓN DE BOTPRESS ACTUALIZADA ---
   useEffect(() => {
-    // 1. Cargamos el script de inyección (v3.6)
-    const injectScript = document.createElement('script');
-    injectScript.src = "https://cdn.botpress.cloud/webchat/v3.6/inject.js";
-    injectScript.async = true;
-    document.body.appendChild(injectScript);
+    const inject = document.createElement('script');
+    inject.src = 'https://cdn.botpress.cloud/webchat/v3.6/inject.js';
+    inject.async = true;
+    document.body.appendChild(inject);
 
-    // 2. Cargamos tu nueva configuración (T0ORO02Y.js)
-    const configScript = document.createElement('script');
-    configScript.src = "https://files.bpcontent.cloud/2026/04/21/04/20260421045652-T0ORO02Y.js";
-    configScript.defer = true;
-    document.body.appendChild(configScript);
+    const config = document.createElement('script');
+    config.src = 'https://files.bpcontent.cloud/2026/04/21/04/20260421045652-T0ORO02Y.js';
+    config.defer = true;
+    document.body.appendChild(config);
 
-    // Limpieza al desmontar
     return () => {
-      if (document.body.contains(injectScript)) document.body.removeChild(injectScript);
-      if (document.body.contains(configScript)) document.body.removeChild(configScript);
+      if (document.body.contains(inject)) document.body.removeChild(inject);
+      if (document.body.contains(config)) document.body.removeChild(config);
     };
   }, []);
 
-  const styles = {
-    app: {
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      backgroundColor: colors.bodyBg,
-      color: colors.darkText,
-      minHeight: '100vh',
-    },
-  };
-
-  // --- Constantes de la App ---
-  const apkUrl = "https://github.com/facisaluduabcapp-spec/WebApp/releases/download/v1/application-02052026.apk";
-  const logoUrl = "/icon copy.png";
-  
-  // Genera la URL del QR dinámicamente
-  const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + apkUrl)}&bgcolor=F4FAF7`;
+  const APK_URL  = 'https://github.com/facisaluduabcapp-spec/WebApp/releases/download/v1/application-02052026.apk';
+  const LOGO_URL = '/icon copy.png';
+  const QR_URL   = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(APK_URL)}&bgcolor=F8F9FA`;
 
   return (
-    <div style={styles.app}>
+    <>
+      <GlobalStyles />
+      <Hero apkUrl={APK_URL} logoUrl={LOGO_URL} />
       <main>
-        <Hero 
-          apkUrl={apkUrl} 
-          logoUrl={logoUrl} 
-        />
         <Features />
-        <DownloadSection 
-          apkUrl={apkUrl} 
-        />
-        <QrSection 
-          qrCodeApiUrl={qrCodeApiUrl} 
-        />
+        <DownloadSection apkUrl={APK_URL} />
+        <ScreenshotsCarrousel />
+        <QrSection qrCodeApiUrl={QR_URL} />
         <Requirements />
       </main>
       <Footer />
-    </div>
+    </>
   );
 }
 
