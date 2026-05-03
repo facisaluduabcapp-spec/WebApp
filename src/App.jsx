@@ -785,7 +785,7 @@ function App() {
     };
   }, []);
 
-  const APK_URL  = 'https://github.com/facisaluduabcapp-spec/WebApp/releases/download/v1/application-02052026.apk';
+  const APK_URL  = 'https://firebasestorage.googleapis.com/v0/b/facisalud-afced.firebasestorage.app/o/application-02052026.apk?alt=media&token=e984218d-6e3b-42b2-a930-d569b468ed79';
   const LOGO_URL = '/icon copy.png';
   const QR_URL   = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(APK_URL)}&bgcolor=F8F9FA`;
 
