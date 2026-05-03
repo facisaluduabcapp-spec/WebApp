@@ -600,36 +600,38 @@ const ScreenshotsCarrousel = () => {
 // QR SECTION
 // ─────────────────────────────────────────────
 const QrSection = ({ qrCodeApiUrl }) => (
-  <section id="qr-download" style={{ background:C.bg, padding:'5rem 2rem', textAlign:'center' }}>
+  <section id="qr-download" style={{ background: C.bg, padding: '5rem 2rem', textAlign: 'center' }}>
     <span className="section-pill">Escanear</span>
-    <h2 style={{ fontFamily:"'Lora',serif", fontSize:'clamp(1.7rem,4vw,2.4rem)', color:C.textPrimary, fontWeight:600, marginBottom:10 }}>
+    <h2 style={{ fontFamily: "'Lora',serif", fontSize: 'clamp(1.7rem,4vw,2.4rem)', color: C.textPrimary, fontWeight: 600, marginBottom: 10 }}>
       Descarga desde tu Teléfono
     </h2>
-    <p style={{ color:C.textSecond, margin:'0 auto 3rem', maxWidth:460, lineHeight:1.7 }}>
+    <p style={{ color: C.textSecond, margin: '0 auto 3rem', maxWidth: 460, lineHeight: 1.7 }}>
       Apunta la cámara al código y el APK se descarga directo en tu Android.
     </p>
 
     <div className="float-anim" style={{
-      display:'inline-block',
-      background:C.surface, borderRadius:22,
-      padding:'1.75rem',
-      border:`1px solid ${C.border}`,
-      boxShadow:'0 12px 40px rgba(0,74,37,0.09)',
+      display: 'inline-block',
+      background: C.surface, 
+      borderRadius: 22,
+      padding: '2rem',
+      border: `1px solid ${C.border}`,
+      boxShadow: '0 12px 40px rgba(0,74,37,0.07)',
     }}>
-      <div style={{ position:'relative', display:'inline-block' }}>
-        {[{top:-8,left:-8},{top:-8,right:-8},{bottom:-8,left:-8},{bottom:-8,right:-8}].map((pos, i) => (
-          <div key={i} style={{ position:'absolute', ...pos, width:22, height:22, border:`3px solid ${C.green}`, borderRadius:4, background:C.greenLight }}/>
-        ))}
-        <img src={qrCodeApiUrl} alt="QR VIH APP" style={{ width:180, height:180, borderRadius:8, display:'block' }}/>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <img 
+          src={qrCodeApiUrl} 
+          alt="QR VIH APP" 
+          style={{ 
+            width: 180, 
+            height: 180, 
+            borderRadius: 12, 
+            display: 'block' 
+          }} 
+        />
       </div>
     </div>
-
-    <p style={{ marginTop:'1.5rem', fontSize:'0.82rem', color:C.textMuted }}>
-      Compatible con la cámara nativa de iOS y Android
-    </p>
   </section>
 );
-
 // ─────────────────────────────────────────────
 // REQUIREMENTS
 // ─────────────────────────────────────────────
