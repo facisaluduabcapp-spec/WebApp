@@ -331,7 +331,7 @@ const DownloadSection = ({ apkUrl }) => (
 
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', paddingBottom: '2.5rem', marginBottom: '2.5rem', borderBottom: `1px solid ${C.border}` }}>
           {[
-            { label: 'Tamaño',     value: '105 MB' },
+            { label: 'Tamaño',     value: '108 MB' },
             { label: 'Versión',    value: 'v1.0.0' },
             { label: 'Plataforma', value: 'Android' },
           ].map(({ label, value, accent }) => (
