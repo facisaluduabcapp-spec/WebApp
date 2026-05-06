@@ -225,21 +225,21 @@ const featureList = [
   { 
     Icon: FaPills, 
     title: 'Control de Medicación', 
-    desc: 'Alarmas y registro de tratamiento para no olvidar ninguna toma. Disponible para usuarios A y B.', 
+    desc: 'Alarmas y registro de tratamiento para no olvidar ninguna toma.', 
     img: '/imagen-med.png', 
     accent: C.greenLight 
   },
   { 
     Icon: FaChartLine, 
     title: 'Seguimiento Diario',     
-    desc: 'Monitoreo de ánimo, síntomas y bienestar general cada día. Disponible para usuarios A.', 
+    desc: 'Monitoreo de ánimo, síntomas y bienestar general cada día.', 
     img: '/imagen-seg.png', 
     accent: '#EEF6FF' 
   },
   { 
     Icon: FaHeart, 
     title: 'Motivación',             
-    desc: 'Mensajes positivos para empezar el día con fuerza. Disponible para usuarios A.',         
+    desc: 'Mensajes positivos para empezar el día con fuerza.',         
     img: '/imagen-mot.png', 
     accent: C.goldLight 
   }
@@ -331,7 +331,7 @@ const DownloadSection = ({ apkUrl }) => (
 
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem', paddingBottom: '2.5rem', marginBottom: '2.5rem', borderBottom: `1px solid ${C.border}` }}>
           {[
-            { label: 'Tamaño',     value: '107 MB' },
+            { label: 'Tamaño',     value: '105 MB' },
             { label: 'Versión',    value: 'v1.0.0' },
             { label: 'Plataforma', value: 'Android' },
           ].map(({ label, value, accent }) => (
@@ -389,7 +389,7 @@ const ScreenshotsCarrousel = () => {
       src: '/images/estado_emocional.png',
       title: 'Resumen emocional',
       subtitle: 'Bienestar diario',
-      desc: 'Visualiza tu progreso emocional basado en tus respuestas. Entendemos que tu bienestar es importante, por eso te damos un resumen claro. Disponible para usuarios A.',
+      desc: 'Visualiza tu progreso emocional basado en tus respuestas. Entendemos que tu bienestar es importante, por eso te damos un resumen claro.',
       accent: '#EEF6FF' // Fondo de acento sutil
     },
     {
@@ -397,7 +397,7 @@ const ScreenshotsCarrousel = () => {
       src: '/images/seguimiento_medico.png',
       title: 'Control de medicación',
       subtitle: 'Toma el control',
-      desc: 'Alarmas y registro de tratamiento para asegurar que nunca olvides una toma. La salud debe ser simple y sin complicaciones. Disponible para usuarios A y B.',
+      desc: 'Alarmas y registro de tratamiento para asegurar que nunca olvides una toma. La salud debe ser simple y sin complicaciones.',
       accent: C.greenLight || '#E8F5E9'
     },
     {
@@ -405,7 +405,7 @@ const ScreenshotsCarrousel = () => {
       src: '/images/seguimiento_diario.png',
       title: 'Seguimiento diario',
       subtitle: 'Tu día a día',
-      desc: 'Registra tu estado de ánimo, síntomas y bienestar general en menos de un minuto. Un espacio seguro y confidencial para ti. Disponible para usuarios A.',
+      desc: 'Registra tu estado de ánimo, síntomas y bienestar general en menos de un minuto. Un espacio seguro y confidencial para ti.',
       accent: '#e8ebfc'
     },
     {
@@ -413,7 +413,7 @@ const ScreenshotsCarrousel = () => {
       src: '/images/panel_progreso.png',
       title: 'Panel de progreso',
       subtitle: 'Estadísticas claras',
-      desc: 'Muestra tu progreso a lo largo del tiempo con gráficos intuitivos y motivadores que te ayudan a tomar decisiones informadas. Disponible para usuarios A y B.',
+      desc: 'Muestra tu progreso a lo largo del tiempo con gráficos intuitivos y motivadores que te ayudan a tomar decisiones informadas.',
       accent: '#bedcf5'
     }
   ];
@@ -787,7 +787,7 @@ function App() {
     };
   }, []);
 
-  const APK_URL  = 'https://firebasestorage.googleapis.com/v0/b/facisalud-afced.firebasestorage.app/o/application-04052026.apk?alt=media&token=8930208f-9619-4c0b-b34e-bd9b24a76fc8';
+  const APK_URL  = 'https://firebasestorage.googleapis.com/v0/b/facisalud-afced.firebasestorage.app/o/application-05052026.apk?alt=media&token=32310337-cefd-4c46-8210-9b8b7d89c831';
   const LOGO_URL = '/icon copy.png';
   const QR_URL   = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(APK_URL)}&bgcolor=F8F9FA`;
 
