@@ -354,7 +354,7 @@ const DownloadSection = ({ apkUrl }) => (
           </a>
           
           {/* Botón secundario: Descargar/Ver Manual en PDF */}
-          <a href="/ManualUsuario-VIHAPP.pdf" download="Manual_Usuario_VIH_APP.pdf" style={{ 
+          <a href="/Manual" download="Manual.pdf" style={{ 
             color: C.green, 
             textDecoration: 'none', 
             fontWeight: 600, 
