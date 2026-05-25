@@ -787,7 +787,7 @@ function App() {
     };
   }, []);
 
-  const APK_URL  = 'https://firebasestorage.googleapis.com/v0/b/facisalud-afced.firebasestorage.app/o/application-16052026.apk?alt=media&token=ad538bd4-0cf6-48d6-9a57-6451f7072dce';
+  const APK_URL  = 'https://firebasestorage.googleapis.com/v0/b/facisalud-afced.firebasestorage.app/o/application-25052026.apk?alt=media&token=fc2ff43c-39f8-43b1-a724-137a0001fef0';
   const LOGO_URL = '/icon copy.png';
   const QR_URL   = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(APK_URL)}&bgcolor=F8F9FA`;
 
